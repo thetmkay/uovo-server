@@ -10,44 +10,34 @@ module.exports = (function(){
 
 	const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'email', 'profile'];
 
-	function initMiddleware(redirect_url){
-		return function(req,res,next){	
+	function getAuthUrl(redirect_url){
+		return new Promise(function(resolve,reject){	
 			oauth2Client = new OAuth2(config.google.id, config.google.secret, redirect_url); 
 
 			var authUrl = oauth2Client.generateAuthUrl({
 				access_type:'offline',
 				scope: SCOPES
 			});
-			
-			res.redirect(authUrl);
-		}
+			resolve(authUrl);
+		});
 	}
 
-	function authMiddleware(gapi){
-		return function(req,res,next){
-			var code = req.query.code;
-			if(!code){
-				return res.status(404).json({
-					status: 404,
-					message: 'Code not returned from google'
-				});
-			}
+	function getAuthClient(code){
+		return new Promise(function(resolve,reject){
 			oauth2Client.getToken(code, function(err,tokens){
 				if(err){
-					return res.status(401).json(err);
+					return reject(err);
 				}
 				oauth2Client.setCredentials(tokens);
-				gapi.options({auth: oauth2Client});
-				
-				res.send('success');
+				resolve(oauth2Client);
 			})	
-		}
+		});
 	}
 
 
 	return {
-		authMiddleware: authMiddleware,
-		initMiddleware: initMiddleware
+		getAuthUrl: getAuthUrl,
+		getAuthClient: getAuthClient
 	};	
 })();
 
