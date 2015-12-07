@@ -39,7 +39,8 @@ module.exports = (function(){
 						name: ev.summary,
 						date: moment(ev.start.dateTime).format('D/M/YY'),
 						startTime:moment(ev.start.dateTime).format('H:mm'),
-						endTime:moment(ev.end.dateTime).format('H:mm')
+						endTime:moment(ev.end.dateTime).format('H:mm'),
+						eventId: ev.id
 					}
 				});
 
@@ -50,5 +51,7 @@ module.exports = (function(){
 				res.status(err.status || 404).json(err);
 			});
 		}
+
+		
 	}	
 })();
