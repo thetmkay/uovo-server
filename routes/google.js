@@ -17,7 +17,6 @@ module.exports = (function(){
 				});
 			}
 			gapi.calendar.updateEvent(eventId, { colorId: color.google_id }).then(function(ev){
-				console.log(ev);
 				res.status(200).json({
 					message: 'Successfully updated'
 				});

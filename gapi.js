@@ -57,7 +57,6 @@ module.exports = (function(){
 						resource: data 
 					}
 
-					console.log(params);
 
 					gcal.events.patch(params, function(err, response){
 						if(err){
