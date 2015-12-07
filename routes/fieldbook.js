@@ -25,7 +25,7 @@ module.exports = (function(){
 	}
 
 	function updateRecord(newData){
-		return function(req,res){
+		return function(req,res,next){
 
 			console.log('fieldbook:update Record');
 
@@ -38,9 +38,7 @@ module.exports = (function(){
 			}
 
 			book.updateRecord(EVENTS_SHEET,calendarEvent.id, newData).then(function(record){
-				res.status(200).json({
-					message: 'Updated successfully'
-				});
+				next();				
 			}, function(err){
 				res.status(err.status || 404).json(err);
 			});
@@ -113,7 +111,7 @@ module.exports = (function(){
 
 		},
 
-		checkIn : function(req,res){
+		checkIn : function(req,res,next){
 
 			var checkInTime = req.body.checkInTime;
 
@@ -122,10 +120,10 @@ module.exports = (function(){
 				skipped: false
 			}
 
-			updateRecord(newData)(req,res);		 
+			updateRecord(newData)(req,res,next);		 
 		},
 
-		checkOut: function(req,res){
+		checkOut: function(req,res,next){
 			var checkOutTime = req.body.checkOutTime;
 
 			var newData = {
@@ -133,16 +131,16 @@ module.exports = (function(){
 				skipped: false,
 			}
 
-			updateRecord(newData)(req,res);		 
+			updateRecord(newData)(req,res,next);		 
 		},
 
-		skip: function(req,res){
+		skip: function(req,res,next){
 
 			var newData = {
 				skipped: true 
 			}
 
-			updateRecord(newData)(req,res);
+			updateRecord(newData)(req,res,next);
 		}
 	}
 })();

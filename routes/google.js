@@ -1,9 +1,31 @@
 module.exports = (function(){	
 	var moment = require('moment'),	
+		constants = require('../constants.js'),
 		gauth  = require('../gauth.js'),
 		gapi = require('../gapi.js');
 	
 	const REDIRECT_URL = 'http://localhost:3000/auth/google/callback';
+
+	function updateColor(color) {
+		return function(req,res,next){
+			var eventId = req.body.eventId;
+		
+			if(!eventId) {
+				return res.status(404).json({
+					status: 404,
+					message: 'No event ID'
+				});
+			}
+			gapi.calendar.updateEvent(eventId, { colorId: color.google_id }).then(function(ev){
+				console.log(ev);
+				res.status(200).json({
+					message: 'Successfully updated'
+				});
+			}, function(err){
+				return res.status(err.status || 404).json(err);
+			});	
+		}
+	}
 
 	return {
 
@@ -29,6 +51,18 @@ module.exports = (function(){
 			}, function(err){
 				res.status(401).json(err);
 			});
+		},
+
+		checkIn: function(req,res,next){
+			updateColor(constants.colors.orange)(req,res,next);	
+		},
+
+		checkOut: function(req,res,next){
+			updateColor(constants.colors.green)(req,res,next);	
+		},
+
+		skip: function(req,res,next){
+			updateColor(constants.colors.red)(req,res,next);	
 		},
 
 		checkEvent: function(req,res,next){

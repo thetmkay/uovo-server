@@ -47,8 +47,26 @@ module.exports = (function(){
 						resolve(response);
 					});
 				});
-			}
+			},
 
+			updateEvent: function(eventId,data){
+				return new Promise(function(resolve,reject){
+					var params = {
+						calendarId: config.google.calendar.id,
+						eventId: eventId,
+						resource: data 
+					}
+
+					console.log(params);
+
+					gcal.events.patch(params, function(err, response){
+						if(err){
+							return reject(err);
+						}
+						resolve(response);
+					});
+				});
+			}
 		}
 	}
 })();

@@ -30,9 +30,9 @@
 
 	router.use('/event',fieldbook.checkEvent, google.checkEvent,fieldbook.addEvent);
 
-	router.post('/event/checkin', fieldbook.checkIn);
-	router.post('/event/checkout', fieldbook.checkOut);
-	router.post('/event/skip', fieldbook.skip);
+	router.post('/event/checkin', fieldbook.checkIn, google.checkIn);
+	router.post('/event/checkout', fieldbook.checkOut, google.checkOut);
+	router.post('/event/skip', fieldbook.skip, google.skip);
 
 	app.listen(3000, function(){
 		console.log('Listening on port 3000');

@@ -8,7 +8,7 @@ module.exports = (function(){
 
 	var config = require('./config');
 
-	const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'email', 'profile'];
+	const SCOPES = ['https://www.googleapis.com/auth/calendar', 'email', 'profile'];
 
 	function getAuthUrl(redirect_url){
 		return new Promise(function(resolve,reject){	
