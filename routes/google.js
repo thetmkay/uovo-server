@@ -30,6 +30,29 @@ module.exports = (function(){
 				res.status(401).json(err);
 			});
 		},
+
+		checkEvent: function(req,res,next){
+			if(req.calendarEvent){
+				next();
+				return;
+			}		
+
+			if(req.calendarEventData || !req.body.eventId){
+				res.status(404).json({
+					status: 404,
+					message: 'Invalid request object'
+				});
+			}
+
+			gapi.calendar.getEvent(req.body.eventId).then(function(calendarEvent){
+				req.calendarEventData = calendarEvent;
+				next();
+				return;
+
+			}, function(err){
+				res.status(err.status || 404).json(err);
+			});
+		},
 		
 		events:function(req,res){
 			gapi.calendar.events().then(function(response){
@@ -44,7 +67,6 @@ module.exports = (function(){
 					}
 				});
 
-				console.log(events);
 				res.render('list',{ events: events});
 
 			}, function(err){
