@@ -47,6 +47,28 @@ function checkOut(event) {
 		.go();
 }
 
+function skip(event) {
+	
+	console.log('skip');
+
+	var eventId = this.parentNode.dataset.eventId;
+
+	aja()
+		.url('event/skip')
+		.method('post')
+		.body({
+			eventId: eventId,
+		})
+		.on('success', function(response){
+			console.log('success');
+			console.log(response);
+		})
+		.on('40*', function(response){
+			console.log('error');
+			console.log(response);
+		})
+		.go();
+}
 document.addEventListener('DOMContentLoaded', function(){
 	var checkInBtns = document.querySelectorAll('.check-in');
 	console.log('check-ins: ' + checkInBtns.length);
@@ -54,11 +76,18 @@ document.addEventListener('DOMContentLoaded', function(){
 	for(var i = 0; i < checkInBtns.length; i++){
 		checkInBtns[i].addEventListener('click', checkIn);
 	}
+
 	var checkOutBtns = document.querySelectorAll('.check-out');
 	console.log('check-outs: ' + checkOutBtns.length);
 
 	for(var i = 0; i < checkOutBtns.length; i++){
 		checkOutBtns[i].addEventListener('click', checkOut);
 	}
+	
+	var skipBtns = document.querySelectorAll('.skip');
+	console.log('skips: ' + skipBtns.length);
 
+	for(var i = 0; i < skipBtns.length; i++){
+		skipBtns[i].addEventListener('click', skip);
+	}
 });

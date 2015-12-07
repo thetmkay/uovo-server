@@ -118,7 +118,8 @@ module.exports = (function(){
 			var checkInTime = req.body.checkInTime;
 
 			var newData = {
-				checkin: checkInTime
+				checkin: checkInTime,
+				skipped: false
 			}
 
 			updateRecord(newData)(req,res);		 
@@ -128,14 +129,20 @@ module.exports = (function(){
 			var checkOutTime = req.body.checkOutTime;
 
 			var newData = {
-				checkout: checkOutTime
+				checkout: checkOutTime,
+				skipped: false,
 			}
 
 			updateRecord(newData)(req,res);		 
 		},
 
 		skip: function(req,res){
-			res.send('skip');
+
+			var newData = {
+				skipped: true 
+			}
+
+			updateRecord(newData)(req,res);
 		}
 	}
 })();
