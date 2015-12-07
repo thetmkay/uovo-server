@@ -25,7 +25,7 @@ module.exports = (function(){
 
 					gcal.events.list(params, function(err,response){
 						if(err) {
-							return resolve(err);
+							return reject(err);
 						}
 
 						console.log(response);
