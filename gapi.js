@@ -32,6 +32,22 @@ module.exports = (function(){
 						resolve(response);	
 					})
 				});
+			},
+
+			getEvent: function(eventId){
+				return new Promise(function(resolve,reject){
+					var params = {
+						calendarId: config.google.calendar.id,
+						eventId: eventId
+					}
+
+					gcal.events.get(params, function(err, response){
+						if(err){
+							return reject(err);
+						}
+						resolve(response);
+					});
+				});
 			}
 
 		}
