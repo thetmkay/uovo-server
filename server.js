@@ -52,8 +52,8 @@
 				return  {
 					name: ev.summary,
 					date: moment(ev.start.dateTime).format('D/M/YY'),
-					startTime:moment(ev.start.dateTime).format('H:m'),
-					endTime:moment(ev.end.dateTime).format('H:m')
+					startTime:moment(ev.start.dateTime).format('H:mm'),
+					endTime:moment(ev.end.dateTime).format('H:mm')
 				}
 			});
 
