@@ -66,7 +66,7 @@ module.exports = (function(){
 				if(eventRecord){
 					//event record already exists
 					console.error('Record exists');
-					return next();	
+					return Promise.resolve(eventRecord);
 				}
 
 				return book.addRecord(sheet, {
@@ -75,6 +75,11 @@ module.exports = (function(){
 					scheduledEnd: eventData.endTime,
 					name: eventData.name
 				});
+			}).then(function(eventRecord){
+				req.calendarEvent = eventRecord;
+				next();
+			},function(err){
+				res.status(err.status || 404).json(err);
 			});	
 
 		},
