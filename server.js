@@ -11,6 +11,7 @@
 	app.engine('mustache', require('mustache-express')());
 	app.set('view engine', 'mustache');
 	app.set('views', path.join(__dirname, 'views'));
+	app.use(express.static(path.join(__dirname,'public')));
 	app.use(bodyParser.json());
 
 	var router = express.Router();
@@ -27,9 +28,11 @@
 	
 	router.get('/list', google.events);	
 
-	router.post('/checkin', fieldbook.checkIn);
-	router.post('/checkout', fieldbook.checkOut);
-	router.post('/skip', fieldbook.skip);
+	router.use('/event',fieldbook.checkEvent, google.checkEvent,fieldbook.addEvent);
+
+	router.post('/event/checkin', fieldbook.checkIn);
+	router.post('/event/checkout', fieldbook.checkOut);
+	router.post('/event/skip', fieldbook.skip);
 
 	app.listen(3000, function(){
 		console.log('Listening on port 3000');
