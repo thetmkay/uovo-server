@@ -20,8 +20,7 @@ module.exports = (function(){
 
 	function findEventRecord(sheet, eventId){
 		return find(sheet, function(evRec){
-				console.log(evRec.eventid);
-				evRec.eventid === eventId;
+				return evRec.eventid === eventId;
 		});
 	}
 
@@ -90,7 +89,7 @@ module.exports = (function(){
 			}
 
 			book.getSheet(EVENTS_SHEET).then(function(sheet){
-				var eventRecord = findEventRecord(sheet, eventData.eventId);
+				var eventRecord = findEventRecord(sheet, eventData.id);
 				
 				if(eventRecord){
 					//event record already exists
