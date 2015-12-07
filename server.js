@@ -1,7 +1,14 @@
 
-	var express = require('express');
+	var express = require('express'),
+		path = require('path'),
+		moment = require('moment');
 
 	var app = express();
+
+	app.engine('mustache', require('mustache-express')());
+	app.set('view engine', 'mustache');
+	app.set('views', path.join(__dirname, 'views'));
+
 	var router = express.Router();
 	app.use(router);
 
@@ -28,7 +35,7 @@
 		}
 		gauth.getAuthClient(code).then(function(client){
 			gapi.options({auth:client});
-			res.send('success');
+			res.redirect('/list');
 		}, function(err){
 			res.status(401).json(err);
 		});
@@ -40,7 +47,19 @@
 	
 	router.get('/list', function(req,res){
 		gapi.calendar.events().then(function(response){
-			res.json(response);	
+
+			var events = response.items.map(function(ev){
+				return  {
+					name: ev.summary,
+					date: moment(ev.start.dateTime).format('D/M/YY'),
+					startTime:moment(ev.start.dateTime).format('H:m'),
+					endTime:moment(ev.end.dateTime).format('H:m')
+				}
+			});
+
+			console.log(events);
+			res.render('list',{ events: events});
+
 		}, function(err){
 			res.status(err.status || 404).json(err);
 		});
