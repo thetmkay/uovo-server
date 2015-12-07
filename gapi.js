@@ -14,7 +14,7 @@ module.exports = (function(){
 			
 			events: function(){
 				return new Promise(function(resolve,reject){
-
+					
 					var params = {
 						calendarId: config.google.calendar.id,
 						timeMin: moment().subtract(4, 'hours').format(),
@@ -28,7 +28,6 @@ module.exports = (function(){
 							return reject(err);
 						}
 
-						console.log(response);
 						resolve(response);	
 					})
 				});
