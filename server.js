@@ -5,11 +5,14 @@
 	var router = express.Router();
 	app.use(router);
 
-	var google = require('./gapi.js');
+	var gauth  = require('./gauth.js');
+	var gapi = require('./gapi.js');
+	
+	const REDIRECT_URL = 'http://localhost:3000/auth/google/callback';
 
-	router.get('/auth/google',google.initMiddleware());
+	router.get('/auth/google',gauth.initMiddleware(REDIRECT_URL));
 
-	router.get('/auth/google/callback', google.authMiddleware());
+	router.get('/auth/google/callback', gauth.authMiddleware(gapi));
 
 	router.get('/',function(req,res){
 		res.send('home');
