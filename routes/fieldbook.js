@@ -1,5 +1,7 @@
 module.exports = (function(){
 
+	'use strict';
+
 	var fbConfig = require('../config.js').fieldbook;
 
 	var book = require('fieldbook-promise')(fbConfig);
@@ -16,21 +18,79 @@ module.exports = (function(){
 		return false;
 	}
 
-	return {
-		checkin : function(req,res){
+	function findEventRecord(sheet, eventId){
+		return find(sheet, function(evRec){
+				evRec.eventId === eventId;
+		});
+	}
 
-			var eventId = req.body.eventId,
-				checkInTime = req.body.checkInTime;
+	return {
+		checkEvent: function(req,res,next){
+			var eventData = req.body.eventData;
 
 			book.getSheet(EVENTS_SHEET).then(function(sheet){
 				
-				var eventRecord = find(sheet, function(evRec){
-					evRec.eventId === eventId;
-				});
-	
-			},function(err){
+				var eventRecord = findEventRecord(sheet,eventData.eventId);
+
+				if(!eventRecord){
+					req.calendarEvent = false;	
+					next();
+					return;
+				}
+
+				req.calendarEvent = eventRecord;	
+				next();
+				return;
+			}, function(err){
 				res.status(err.status || 404).json(err);
 			});	
+		},
+
+		addEvent: function(req,res,next){
+			if(req.calendarEvent) {
+				return next();
+			}
+
+			var eventData = req.calendarEventData;
+
+			if(!eventData) {
+				return res.status(404).json({
+					status: 404,
+					message: 'No calendar event data'
+				});
+			}
+
+			book.getSheet(EVENTS_SHEET).then(function(sheet){
+				var eventRecord = findEventRecord(sheet, eventData.eventId);
+				
+				if(eventRecord){
+					//event record already exists
+					console.error('Record exists');
+					return next();	
+				}
+
+				return book.addRecord(sheet, {
+					eventId: eventData.eventId,
+					scheduledStart: eventData.startTime,
+					scheduledEnd: eventData.endTime,
+					name: eventData.name
+				});
+			});	
+
+		},
+
+		checkIn : function(req,res){
+
+			var checkInTime = req.body.checkInTime;
+	
+		},
+
+		checkOut: function(req,res){
+			res.send('check out');
+		},
+
+		skip: function(req,res){
+			res.send('skip');
 		}
 	}
 })();
