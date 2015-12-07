@@ -37,6 +37,14 @@
 	router.get('/',function(req,res){
 		res.send('home');
 	});
+	
+	router.get('/list', function(req,res){
+		gapi.calendar.events().then(function(response){
+			res.json(response);	
+		}, function(err){
+			res.status(err.status || 404).json(err);
+		});
+	});	
 
 	app.listen(3000, function(){
 		console.log('Listening on port 3000');
