@@ -20,17 +20,43 @@ module.exports = (function(){
 
 	function findEventRecord(sheet, eventId){
 		return find(sheet, function(evRec){
-				evRec.eventId === eventId;
+				console.log(evRec.eventid);
+				evRec.eventid === eventId;
 		});
+	}
+
+	function updateRecord(newData){
+		return function(req,res){
+
+			console.log('fieldbook:update Record');
+
+			var calendarEvent = req.calendarEvent;	
+			if(!calendarEvent){
+				return res.status(404).json({
+					status: 404,
+					message: 'No calendar event'
+				});
+			}
+
+			book.updateRecord(EVENTS_SHEET,calendarEvent.id, newData).then(function(record){
+				res.status(200).json({
+					message: 'Updated successfully'
+				});
+			}, function(err){
+				res.status(err.status || 404).json(err);
+			});
+		}
 	}
 
 	return {
 		checkEvent: function(req,res,next){
-			var eventData = req.body.eventData;
+			var eventId = req.body.eventId;
+
+			console.log('fieldbook:check Event');
 
 			book.getSheet(EVENTS_SHEET).then(function(sheet){
 				
-				var eventRecord = findEventRecord(sheet,eventData.eventId);
+				var eventRecord = findEventRecord(sheet,eventId);
 
 				if(!eventRecord){
 					req.calendarEvent = false;	
@@ -47,6 +73,9 @@ module.exports = (function(){
 		},
 
 		addEvent: function(req,res,next){
+
+			console.log('fieldbook: addEvent');
+
 			if(req.calendarEvent) {
 				return next();
 			}
@@ -69,11 +98,12 @@ module.exports = (function(){
 					return Promise.resolve(eventRecord);
 				}
 
-				return book.addRecord(sheet, {
-					eventId: eventData.eventId,
-					scheduledStart: eventData.startTime,
-					scheduledEnd: eventData.endTime,
-					name: eventData.name
+
+				return book.addRecord(EVENTS_SHEET, {
+					eventid: eventData.id,
+					scheduledstart: eventData.start.dateTime,
+					scheduledend: eventData.end.dateTime,
+					name: eventData.summary
 				});
 			}).then(function(eventRecord){
 				req.calendarEvent = eventRecord;
@@ -87,11 +117,22 @@ module.exports = (function(){
 		checkIn : function(req,res){
 
 			var checkInTime = req.body.checkInTime;
-	
+
+			var newData = {
+				checkin: checkInTime
+			}
+
+			updateRecord(newData)(req,res);		 
 		},
 
 		checkOut: function(req,res){
-			res.send('check out');
+			var checkOutTime = req.body.checkOutTime;
+
+			var newData = {
+				checkout: checkOutTime
+			}
+
+			updateRecord(newData)(req,res);		 
 		},
 
 		skip: function(req,res){
