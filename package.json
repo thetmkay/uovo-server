@@ -20,5 +20,8 @@
     "mustache-express": "^1.2.1",
     "passport": "^0.3.2",
     "passport-google-oauth": "^0.2.0"
+  },
+  "devDependencies": {
+    "aja": "^0.4.1"
   }
 }

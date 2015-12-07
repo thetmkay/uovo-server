@@ -5,10 +5,14 @@
 </head>
 <body>
 	{{#events}}
-		<div>
+		<div data-event-id="{{eventId}}">
 			<h1>{{name}}</h2>
 			<p>{{date}}: <span>{{startTime}}</span> - <span>{{endTime}}</span></p>
+			<button class="check-in">Check In</button>
+			<button class="check-out">Check Out</button>
 		</div>
 	{{/events}}
+	<script type="text/javascript" src="js/aja.min.js"></script>
+	<script type="text/javascript" src="js/list.js"></script>
 </body>
 </html>
