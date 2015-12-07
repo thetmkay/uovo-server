@@ -1,0 +1,19 @@
+{
+  "name": "uovo-server",
+  "version": "0.0.1",
+  "description": "Server for uovo",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "George Nishimura <me@georgenishimura.com>",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^4.13.3",
+    "express-session": "^1.12.1",
+    "google-auth-library": "^0.9.7",
+    "googleapis": "^2.1.6",
+    "passport": "^0.3.2",
+    "passport-google-oauth": "^0.2.0"
+  }
+}
