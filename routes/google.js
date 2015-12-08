@@ -97,10 +97,9 @@ module.exports = (function(){
 
 				var events = response.items.map(function(ev){
 					return  {
-						name: ev.summary,
-						date: moment(ev.start.dateTime).format('D/M/YY'),
-						startTime:moment(ev.start.dateTime).format('H:mm'),
-						endTime:moment(ev.end.dateTime).format('H:mm'),
+						title: ev.summary,
+						startDate:moment(ev.start.dateTime).format(),
+						endDate:moment(ev.end.dateTime).format(),
 						eventId: ev.id,
 						colorId: ev.colorId
 					}
