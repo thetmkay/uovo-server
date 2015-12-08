@@ -27,28 +27,13 @@ module.exports = (function(){
 	}
 
 	return {
-
-		auth: function(req,res){
-			gauth.getAuthUrl(REDIRECT_URL).then(function(url){
-				res.json({url:url});
-			},function(err){
-				res.status(err.status || err.code  || 404).json(err);
-			});
-		},
-
-		callback: function(req,res){
-			var code = req.query.code;
-			if(!code){
-				return res.status(404).json({
-					status: 404,
-					message: 'Code not returned from google'
-				});
-			}
-			gauth.getAuthClient(code).then(function(client){
+		
+		authorize: function(req,res,next){
+			gauth.authorize().then(function(client){
 				gapi.options({auth:client});
-				res.redirect('/list');
+				next();
 			}, function(err){
-				res.status(401).json(err);
+				res.status(err.status || err.code || 403).json(err);
 			});
 		},
 
@@ -87,7 +72,7 @@ module.exports = (function(){
 			});
 		},
 		
-		events:function(req,res){
+		list:function(req,res){
 			gapi.calendar.events().then(function(response){
 
 				var events = response.items.map(function(ev){
@@ -100,13 +85,35 @@ module.exports = (function(){
 					}
 				});
 
+				res.render('list',{ events: events});
+
+			}, function(err){
+				res.status(err.status || err.code || 404).json(err);
+			});
+		},
+
+		events:function(req,res){
+			gapi.calendar.events().then(function(response){
+
+				var events = response.items.map(function(ev){
+					return  {
+						name: ev.summary,
+						date: moment(ev.start.dateTime).format('D/M/YY'),
+						startTime:moment(ev.start.dateTime).format('H:mm'),
+						endTime:moment(ev.end.dateTime).format('H:mm'),
+						eventId: ev.id,
+						colorId: ev.colorId
+					}
+				});
+
 				res.json(events);
 				//res.render('list',{ events: events});
 
 			}, function(err){
 				res.status(err.status || err.code || 404).json(err);
 			});
-		}
+		},
+	
 
 		
 	}	

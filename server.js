@@ -18,17 +18,13 @@
 	app.use(router);
 
 
-	router.get('/auth/google',google.auth);
-
-	router.get('/auth/google/callback',google.callback);
-
 	router.get('/',function(req,res){
 		res.send('home');
 	});
 	
-	router.get('/list', google.events);	
-
-	router.use('/event',fieldbook.checkEvent, google.checkEvent,fieldbook.addEvent);
+	router.get('/list', google.authorize,google.list);	
+	router.get('/events',google.authorize,google.events); 
+	router.use('/event',google.authorize,fieldbook.checkEvent, google.checkEvent,fieldbook.addEvent);
 
 	router.post('/event/checkin', fieldbook.checkIn, google.checkIn);
 	router.post('/event/checkout', fieldbook.checkOut, google.checkOut);

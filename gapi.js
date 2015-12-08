@@ -14,11 +14,13 @@ module.exports = (function(){
 			
 			events: function(){
 				return new Promise(function(resolve,reject){
-					
+				
+					var beginning = moment().hours(0).minutes(0).seconds(0);
+	
 					var params = {
 						calendarId: config.google.calendar.id,
-						timeMin: moment().subtract(4, 'hours').format(),
-						timeMax: moment().add(23, 'hours').format(),
+						timeMin: beginning.format(),
+						timeMax: beginning.add(1, 'days').format(),
 						orderBy: 'startTime',
 						singleEvents: true
 					};
