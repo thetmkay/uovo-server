@@ -21,7 +21,7 @@ module.exports = (function(){
 					message: 'Successfully updated'
 				});
 			}, function(err){
-				return res.status(err.status || 404).json(err);
+				return res.status(err.status || err.code  || 404).json(err);
 			});	
 		}
 	}
@@ -30,9 +30,9 @@ module.exports = (function(){
 
 		auth: function(req,res){
 			gauth.getAuthUrl(REDIRECT_URL).then(function(url){
-				res.redirect(url);
+				res.json({url:url});
 			},function(err){
-				res.status(err.status || 404).json(err);
+				res.status(err.status || err.code  || 404).json(err);
 			});
 		},
 
@@ -83,7 +83,7 @@ module.exports = (function(){
 				return;
 
 			}, function(err){
-				res.status(err.status || 404).json(err);
+				res.status(err.status || err.code  || 404).json(err);
 			});
 		},
 		
@@ -100,10 +100,11 @@ module.exports = (function(){
 					}
 				});
 
-				res.render('list',{ events: events});
+				res.json(events);
+				//res.render('list',{ events: events});
 
 			}, function(err){
-				res.status(err.status || 404).json(err);
+				res.status(err.status || err.code || 404).json(err);
 			});
 		}
 
