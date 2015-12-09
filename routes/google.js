@@ -84,9 +84,9 @@ module.exports = (function(){
 					return  {
 						name: ev.summary,
 						date: moment(ev.start.dateTime).format('D/M/YY'),
-						startTime:moment(ev.start.dateTime).format('H:mm'),
-						endTime:moment(ev.end.dateTime).format('H:mm'),
-						eventId: ev.id
+						start_time:moment(ev.start.dateTime).format('H:mm'),
+						end_time:moment(ev.end.dateTime).format('H:mm'),
+						event_id: ev.id
 					}
 				});
 
@@ -104,10 +104,10 @@ module.exports = (function(){
 				var events = response.items.map(function(ev){
 					return  {
 						name: ev.summary,
-						startTime:moment(ev.start.dateTime).format(),
-						endTime:moment(ev.end.dateTime).format(),
-						eventId: ev.id,
-						colorId: ev.colorId
+						start_time:moment(ev.start.dateTime).format(),
+						end_time:moment(ev.end.dateTime).format(),
+						event_id: ev.id,
+						color_id: ev.colorId
 					}
 				});
 				

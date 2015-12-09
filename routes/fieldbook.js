@@ -157,14 +157,14 @@ module.exports = (function(){
 				
 				return events.map(function(ev){
 					
-					var eventRecord = findEventRecord(sheet,ev.eventId);
+					var eventRecord = findEventRecord(sheet,ev.event_id);
 					if(!eventRecord){
-						ev.checkInTime = null;
-						ev.checkOutTime = null;
+						ev.check_in_time = null;
+						ev.check_out_time = null;
 						ev.skipped = null;	
 					} else{
-						ev.checkInTime = eventRecord.check_in_time;
-						ev.checkOutTime = eventRecord.check_out_time;
+						ev.check_in_time = eventRecord.check_in_time;
+						ev.check_out_time = eventRecord.check_out_time;
 						ev.skipped = eventRecord.skipped;	
 					}
 
