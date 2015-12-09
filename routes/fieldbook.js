@@ -20,7 +20,7 @@ module.exports = (function(){
 
 	function findEventRecord(sheet, eventId){
 		return find(sheet, function(evRec){
-				return evRec.eventid === eventId;
+				return evRec.event_id === eventId;
 		});
 	}
 
@@ -97,9 +97,9 @@ module.exports = (function(){
 
 
 				return book.addRecord(EVENTS_SHEET, {
-					eventid: eventData.id,
-					scheduledstart: eventData.start.dateTime,
-					scheduledend: eventData.end.dateTime,
+					event_id: eventData.id,
+					start_time: eventData.start.dateTime,
+					end_time: eventData.end.dateTime,
 					name: eventData.summary
 				});
 			}).then(function(eventRecord){
@@ -116,7 +116,7 @@ module.exports = (function(){
 			var checkInTime = req.body.checkInTime;
 
 			var newData = {
-				checkin: checkInTime,
+				check_in_time: checkInTime,
 				skipped: false
 			}
 
@@ -127,7 +127,7 @@ module.exports = (function(){
 			var checkOutTime = req.body.checkOutTime;
 
 			var newData = {
-				checkout: checkOutTime,
+				check_out_time: checkOutTime,
 				skipped: false,
 			}
 
@@ -141,6 +141,34 @@ module.exports = (function(){
 			}
 
 			updateRecord(newData)(req,res,next);
+		},
+
+		getEvents: function(req,res,next){
+
+			console.log('fieldbook: getEvents');
+
+			var events = req.events;
+
+			book.getSheet(EVENTS_SHEET).then(function(sheet){
+				
+				return events.map(function(ev){
+					
+					var eventRecord = findEventRecord(sheet,ev.eventId);
+					if(!eventRecord){
+						return ev;	
+					}
+
+					ev.checkInTime = eventRecord.check_in_time;
+					ev.checkOutTime = eventRecord.check_out_time;
+					ev.skipped = eventRecord.skipped;	
+
+					return ev;
+				});	
+			}).then(function(events){
+				res.json(events);	
+			},function(err){
+				res.status(err.status || 404).json(err);
+			});	
 		}
 	}
 })();

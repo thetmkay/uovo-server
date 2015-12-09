@@ -23,7 +23,7 @@
 	});
 	
 	router.get('/list', google.authorize,google.list);	
-	router.get('/events',google.authorize,google.events); 
+	router.get('/events',google.authorize,google.getEvents,fieldbook.getEvents); 
 	router.use('/event',google.authorize,fieldbook.checkEvent, google.checkEvent,fieldbook.addEvent);
 
 	router.post('/event/checkin', fieldbook.checkIn, google.checkIn);

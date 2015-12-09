@@ -71,7 +71,7 @@ module.exports = (function(){
 				res.status(err.status || err.code  || 404).json(err);
 			});
 		},
-		
+		//refactor	
 		list:function(req,res){
 			gapi.calendar.events().then(function(response){
 
@@ -92,22 +92,21 @@ module.exports = (function(){
 			});
 		},
 
-		events:function(req,res){
+		getEvents:function(req,res,next){
 			gapi.calendar.events().then(function(response){
 
 				var events = response.items.map(function(ev){
 					return  {
-						title: ev.summary,
-						startDate:moment(ev.start.dateTime).format(),
-						endDate:moment(ev.end.dateTime).format(),
+						name: ev.summary,
+						startTime:moment(ev.start.dateTime).format(),
+						endTime:moment(ev.end.dateTime).format(),
 						eventId: ev.id,
 						colorId: ev.colorId
 					}
 				});
-
-				res.json(events);
-				//res.render('list',{ events: events});
-
+				
+				req.events = events;
+				next();
 			}, function(err){
 				res.status(err.status || err.code || 404).json(err);
 			});
