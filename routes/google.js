@@ -17,9 +17,14 @@ module.exports = (function(){
 				});
 			}
 			gapi.calendar.updateEvent(eventId, { colorId: color.google_id }).then(function(ev){
-				res.status(200).json({
-					message: 'Successfully updated'
-				});
+				var responseBody = {};
+				if(req.newData){
+					responseBody = req.newData;
+				}
+			
+				responseBody.message = 'Successfully updated';
+
+				res.status(200).json(responseBody);
 			}, function(err){
 				return res.status(err.status || err.code  || 404).json(err);
 			});	

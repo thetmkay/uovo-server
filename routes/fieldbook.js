@@ -38,6 +38,7 @@ module.exports = (function(){
 			}
 
 			book.updateRecord(EVENTS_SHEET,calendarEvent.id, newData).then(function(record){
+				req.newData = newData;
 				next();				
 			}, function(err){
 				res.status(err.status || 404).json(err);
@@ -155,12 +156,14 @@ module.exports = (function(){
 					
 					var eventRecord = findEventRecord(sheet,ev.eventId);
 					if(!eventRecord){
-						return ev;	
+						ev.checkInTime = null;
+						ev.checkOutTime = null;
+						ev.skipped = null;	
+					} else{
+						ev.checkInTime = eventRecord.check_in_time;
+						ev.checkOutTime = eventRecord.check_out_time;
+						ev.skipped = eventRecord.skipped;	
 					}
-
-					ev.checkInTime = eventRecord.check_in_time;
-					ev.checkOutTime = eventRecord.check_out_time;
-					ev.skipped = eventRecord.skipped;	
 
 					return ev;
 				});	
