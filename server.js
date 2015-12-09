@@ -30,9 +30,11 @@
 	router.post('/event/checkout', fieldbook.checkOut, google.checkOut);
 	router.post('/event/skip', fieldbook.skip, google.skip);
 
-	app.listen(3000, function(){
-		console.log('Listening on port 3000');
-	});	
+	if(require.main === module){
+		app.listen(3000, function(){
+			console.log('Listening on port 3000');
+		});	
+	}
 
 	module.exports = app;
 
