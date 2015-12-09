@@ -78,7 +78,7 @@ module.exports = (function(){
 		},
 		//refactor	
 		list:function(req,res){
-			gapi.calendar.events().then(function(response){
+			gapi.calendar.getEvents(moment()).then(function(response){
 
 				var events = response.items.map(function(ev){
 					return  {
@@ -98,7 +98,8 @@ module.exports = (function(){
 		},
 
 		getEvents:function(req,res,next){
-			gapi.calendar.events().then(function(response){
+			var date = moment(req.params.date);
+			gapi.calendar.getEvents(date).then(function(response){
 
 				var events = response.items.map(function(ev){
 					return  {

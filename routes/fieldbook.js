@@ -2,7 +2,8 @@ module.exports = (function(){
 
 	'use strict';
 
-	var fbConfig = require('../config.js').fieldbook;
+	var fbConfig = require('../config.js').fieldbook,
+		moment = require('moment');
 
 	var book = require('fieldbook-promise')(fbConfig);
 
@@ -150,6 +151,8 @@ module.exports = (function(){
 
 			var events = req.events;
 
+			var date = moment(req.params.date).format('YYYY-MM-DD');
+
 			book.getSheet(EVENTS_SHEET).then(function(sheet){
 				
 				return events.map(function(ev){
@@ -168,7 +171,10 @@ module.exports = (function(){
 					return ev;
 				});	
 			}).then(function(events){
-				res.json(events);	
+				res.json({
+					events:events,
+					date:date
+				});	
 			},function(err){
 				res.status(err.status || 404).json(err);
 			});	

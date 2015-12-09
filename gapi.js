@@ -12,10 +12,10 @@ module.exports = (function(){
 
 		calendar: {
 			
-			events: function(){
+			getEvents: function(date){
 				return new Promise(function(resolve,reject){
 				
-					var beginning = moment().hours(0).minutes(0).seconds(0);
+					var beginning = date.hours(0).minutes(0).seconds(0);
 	
 					var params = {
 						calendarId: config.google.calendar.id,
