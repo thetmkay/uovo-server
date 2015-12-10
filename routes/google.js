@@ -87,9 +87,9 @@ module.exports = (function(){
 					return  {
 						name: ev.summary,
 						date: moment(ev.start.dateTime).format('D/M/YY'),
-						start_time:moment(ev.start.dateTime).format('H:mm'),
-						end_time:moment(ev.end.dateTime).format('H:mm'),
-						event_id: ev.id
+						startTime:moment(ev.start.dateTime).format('H:mm'),
+						endTime:moment(ev.end.dateTime).format('H:mm'),
+						eventId: ev.id
 					}
 				});
 
