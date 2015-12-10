@@ -79,26 +79,6 @@ module.exports = (function(){
 				res.status(err.status || err.code  || 404).json(err);
 			});
 		},
-		//refactor	
-		list:function(req,res){
-			gapi.calendar.getEvents(moment()).then(function(response){
-
-				var events = response.items.map(function(ev){
-					return  {
-						name: ev.summary,
-						date: moment(ev.start.dateTime).format('D/M/YY'),
-						startTime:moment(ev.start.dateTime).format('H:mm'),
-						endTime:moment(ev.end.dateTime).format('H:mm'),
-						eventId: ev.id
-					}
-				});
-
-				res.render('list',{ events: events});
-
-			}, function(err){
-				res.status(err.status || err.code || 404).json(err);
-			});
-		},
 
 		getEvents:function(req,res,next){
 			var date = moment(req.params.date);

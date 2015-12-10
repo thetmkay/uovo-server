@@ -4,6 +4,7 @@
 		path = require('path'),
 		bodyParser = require('body-parser'),
 		google = require('./routes/google'),
+		moment = require('moment'),
 		fieldbook = require('./routes/fieldbook');
 
 	var app = express();
@@ -22,7 +23,23 @@
 		res.status(200).json({message:'alive'});;
 	});
 	
-	router.get('/list', google.authorize,google.list);	
+	function renderList(req,res){
+		res.render('list',{
+			events:req.events,
+			filterDate: function(){
+				return function(text,render){
+					return moment(render(text)).format('D/MM/YY');
+				};
+			},
+			filterTime: function(){ 
+				return function(text,render){
+					return moment(render(text)).format('H:mm');	
+				};
+			}
+		});
+	}
+
+	router.get('/list', google.authorize,google.getEvents, renderList);	
 	router.get('/events/:date',google.authorize,google.getEvents,fieldbook.getEvents); 
 	router.use('/event',google.authorize,fieldbook.checkEvent, google.checkEvent,fieldbook.addEvent);
 

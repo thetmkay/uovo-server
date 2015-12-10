@@ -5,9 +5,9 @@
 </head>
 <body>
 	{{#events}}
-		<div data-event-id="{{eventId}}">
+		<div data-event-id="{{event_id}}">
 			<h1>{{name}}</h2>
-			<p>{{date}}: <span>{{startTime}}</span> - <span>{{endTime}}</span></p>
+			<p>{{#filterDate}}{{start_time}}{{/filterDate}}: <span>{{#filterTime}}{{start_time}}{{/filterTime}}</span> - <span>{{#filterTime}}{{end_time}}{{/filterTime}}</span></p>
 			<button class="check-in">Check In</button>
 			<button class="check-out">Check Out</button>
 			<button class="skip">Skip</button>
