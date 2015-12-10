@@ -19,7 +19,7 @@
 
 
 	router.get('/',function(req,res){
-		res.send('home');
+		res.status(200).json({message:'alive'});;
 	});
 	
 	router.get('/list', google.authorize,google.list);	
