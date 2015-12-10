@@ -9,24 +9,27 @@ module.exports = (function(){
 	function updateColor(color) {
 		return function(req,res,next){
 			var eventId = req.body.eventId;
-		
+
+			var responseBody = {};
+			if(req.newData){
+				responseBody = req.newData;
+			}
+
 			if(!eventId) {
-				return res.status(404).json({
+				responseBody.error = {
 					status: 404,
 					message: 'No event ID'
-				});
+				};
+				return res.status(200).json(responseBody);
 			}
 			gapi.calendar.updateEvent(eventId, { colorId: color.google_id }).then(function(ev){
-				var responseBody = {};
-				if(req.newData){
-					responseBody = req.newData;
-				}
-			
 				responseBody.message = 'Successfully updated';
 
 				res.status(200).json(responseBody);
 			}, function(err){
-				return res.status(err.status || err.code  || 404).json(err);
+				//just because color doesn't change doesn't mean request failed
+				responseBody.error = err;
+				return res.status(200).json(responseBody);
 			});	
 		}
 	}
