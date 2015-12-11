@@ -38,8 +38,26 @@ module.exports = (function(){
 				});
 			}
 
+			req.newData = newData;
+
+			var hasAdded = false;
+			for(let i in Object.keys(newData)){
+				let prop = Object.keys(newData)[i];	
+				console.log(prop + ': ' + !calendarEvent[prop]);
+				if(!calendarEvent[prop] || (prop === 'skipped')){
+					calendarEvent[prop] = newData[prop];
+					hasAdded = true;
+				}	
+			}	
+			
+			if(!hasAdded){
+				console.log('nothing new');
+				return res.status(200).json({
+					message: 'No update'
+				});
+			}
+
 			book.updateRecord(EVENTS_SHEET,calendarEvent.id, newData).then(function(record){
-				req.newData = newData;
 				next();				
 			}, function(err){
 				res.status(err.status || 404).json(err);
@@ -118,8 +136,7 @@ module.exports = (function(){
 			var checkInTime = req.body.checkInTime;
 
 			var newData = {
-				check_in_time: checkInTime,
-				skipped: false
+				check_in_time: checkInTime
 			}
 
 			updateRecord(newData)(req,res,next);		 
@@ -129,8 +146,7 @@ module.exports = (function(){
 			var checkOutTime = req.body.checkOutTime;
 
 			var newData = {
-				check_out_time: checkOutTime,
-				skipped: false,
+				check_out_time: checkOutTime
 			}
 
 			updateRecord(newData)(req,res,next);		 
@@ -155,21 +171,30 @@ module.exports = (function(){
 
 			book.getSheet(EVENTS_SHEET).then(function(sheet){
 				
-				return events.map(function(ev){
+				return Promise.all(events.map(function(ev){
 					
 					var eventRecord = findEventRecord(sheet,ev.event_id);
 					if(!eventRecord){
 						ev.check_in_time = null;
 						ev.check_out_time = null;
 						ev.skipped = null;	
+
+						var newRecord = {
+							name: ev.name,
+							event_id: ev.event_id,
+							start_time: ev.start_time,
+							end_time: ev.end_time
+						}
+
+						return book.addRecord(EVENTS_SHEET, newRecord).then(Promise.resolve(ev));
 					} else{
 						ev.check_in_time = eventRecord.check_in_time;
 						ev.check_out_time = eventRecord.check_out_time;
 						ev.skipped = eventRecord.skipped;	
+						return ev;
 					}
 
-					return ev;
-				});	
+				}));	
 			}).then(function(events){
 				res.json({
 					events:events,

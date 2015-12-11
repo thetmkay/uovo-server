@@ -8,6 +8,7 @@ module.exports = (function(){
 
 	function updateColor(color) {
 		return function(req,res,next){
+			console.log('google: updateColor');
 			var eventId = req.body.eventId;
 
 			var responseBody = {};
@@ -34,6 +35,10 @@ module.exports = (function(){
 		}
 	}
 
+	function notSkipped(record){
+		return !record.skipped || record.skipped === 'false';
+	}
+
 	return {
 		
 		authorize: function(req,res,next){
@@ -46,11 +51,20 @@ module.exports = (function(){
 		},
 
 		checkIn: function(req,res,next){
-			updateColor(constants.colors.orange)(req,res,next);	
+			console.log('google: checkin');
+			if(notSkipped(req.calendarEvent) && !req.calendarEvent.check_out_time){
+				updateColor(constants.colors.orange)(req,res,next);	
+			} else{
+				res.status(200).json(req.newData);
+			}
 		},
 
 		checkOut: function(req,res,next){
-			updateColor(constants.colors.green)(req,res,next);	
+			if(notSkipped(req.calendarEvent)) {
+				updateColor(constants.colors.green)(req,res,next);	
+			} else{
+				res.status(200).json(req.newData);
+			}
 		},
 
 		skip: function(req,res,next){
