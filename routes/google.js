@@ -103,8 +103,7 @@ module.exports = (function(){
 						name: ev.summary,
 						start_time:moment(ev.start.dateTime).format(),
 						end_time:moment(ev.end.dateTime).format(),
-						event_id: ev.id,
-						color_id: ev.colorId
+						event_id: ev.id
 					}
 				});
 				

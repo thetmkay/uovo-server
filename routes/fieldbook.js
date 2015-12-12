@@ -179,14 +179,7 @@ module.exports = (function(){
 						ev.check_out_time = null;
 						ev.skipped = null;	
 
-						var newRecord = {
-							name: ev.name,
-							event_id: ev.event_id,
-							start_time: ev.start_time,
-							end_time: ev.end_time
-						}
-
-						return book.addRecord(EVENTS_SHEET, newRecord).then(Promise.resolve(ev));
+						return book.addRecord(EVENTS_SHEET,ev);
 					} else{
 						ev.check_in_time = eventRecord.check_in_time;
 						ev.check_out_time = eventRecord.check_out_time;
