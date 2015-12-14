@@ -5,9 +5,16 @@
 		bodyParser = require('body-parser'),
 		google = require('./routes/google'),
 		moment = require('moment'),
+		config = require('./config'),
+		jwt = require('express-jwt'),
 		fieldbook = require('./routes/fieldbook');
 
 	var app = express();
+	
+	var authorize = jwt({
+	  secret: new Buffer(config.auth0.secret, 'base64'),
+	  audience: config.auth0.audience
+	});
 
 	app.engine('mustache', require('mustache-express')());
 	app.set('view engine', 'mustache');
@@ -39,13 +46,13 @@
 		});
 	}
 
-	router.get('/list', google.authorize,google.getEvents, renderList);	
-	router.get('/events/:date',google.authorize,google.getEvents,fieldbook.getEvents); 
-	router.use('/event',google.authorize,fieldbook.checkEvent, google.checkEvent,fieldbook.addEvent);
+	router.get('/list',authorize, google.authorize,google.getEvents, renderList);	
+	router.get('/events/:date',authorize, google.authorize,google.getEvents,fieldbook.getEvents); 
+	router.use('/event',authorize, google.authorize,fieldbook.checkEvent, google.checkEvent,fieldbook.addEvent);
 
-	router.post('/event/checkin', fieldbook.checkIn, google.checkIn);
-	router.post('/event/checkout', fieldbook.checkOut, google.checkOut);
-	router.post('/event/skip', fieldbook.skip, google.skip);
+	router.post('/event/checkin',authorize, fieldbook.checkIn, google.checkIn);
+	router.post('/event/checkout',authorize, fieldbook.checkOut, google.checkOut);
+	router.post('/event/skip',authorize, fieldbook.skip, google.skip);
 
 	if(require.main === module){
 		app.listen(3000, function(){
