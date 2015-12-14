@@ -54,6 +54,10 @@
 	router.post('/event/checkout',authorize, fieldbook.checkOut, google.checkOut);
 	router.post('/event/skip',authorize, fieldbook.skip, google.skip);
 
+	router.get('/', function(req,res){
+		res.send('uovo');
+	});
+
 	if(require.main === module){
 		app.listen(3000, function(){
 			console.log('Listening on port 3000');
