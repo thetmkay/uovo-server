@@ -6,6 +6,12 @@ module.exports = (function(){
 	
 	const REDIRECT_URL = 'http://localhost:3000/auth/google/callback';
 
+	var lastSyncToken;
+
+	gapi.calendar.getLatestToken(function(response){
+		lastSyncToken = response.nextSyncToken
+	});
+
 	function updateColor(color) {
 		return function(req,res,next){
 			console.log('google: updateColor');
@@ -33,6 +39,21 @@ module.exports = (function(){
 				return res.status(200).json(responseBody);
 			});	
 		}
+	}
+
+	function mapEvents(events){
+		return events.map(function(ev){
+			return  {
+				name: ev.summary,
+				start_time:moment(ev.start.dateTime).format(),
+				end_time:moment(ev.end.dateTime).format(),
+				check_in_time: false,
+				check_out_time: false,
+				skipped: false,
+				date: moment(ev.start.dateTime).format('YYYY-MM-DD'),
+				_id: ev.id
+			}
+		});
 	}
 
 	function notSkipped(record){
@@ -94,27 +115,22 @@ module.exports = (function(){
 			});
 		},
 
-		getEvents:function(req,res,next){
-			var date = moment(req.params.date);
-			gapi.calendar.getEvents(date).then(function(response){
-
-				var events = response.items.map(function(ev){
-					return  {
-						name: ev.summary,
-						start_time:moment(ev.start.dateTime).format(),
-						end_time:moment(ev.end.dateTime).format(),
-						event_id: ev.id
-					}
-				});
-				
-				req.events = events;
-				next();
+		getChanges: function(req,res,next){
+			console.log('notification')
+			
+			var resourceId = require('../config').google.calendar.id
+			//var resourceId = req.body.resourceId
+			
+			gapi.calendar.getEventsChangedSince(lastSyncToken,resourceId).then(function(response){
+				lastSyncToken = response.nextSyncToken
+				console.log(`gapi fetched: ${response.items.length}`)
+				req.events = mapEvents(response.items)	
+				console.log('mapped')
+				next()
 			}, function(err){
-				res.status(err.status || err.code || 404).json(err);
-			});
-		},
+				res.status(err.status || err.code || 404).json(err)
+			})
+		}
 	
-
-		
 	}	
 })();

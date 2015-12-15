@@ -11,7 +11,7 @@ module.exports = (function(){
 		},
 
 		calendar: {
-			
+		/*	
 			getEvents: function(date){
 				return new Promise(function(resolve,reject){
 				
@@ -24,6 +24,47 @@ module.exports = (function(){
 						orderBy: 'startTime',
 						singleEvents: true
 					};
+
+					gcal.events.list(params, function(err,response){
+						if(err) {
+							return reject(err);
+						}
+
+						resolve(response);	
+					})
+				});
+			},*/
+			
+			getLatestToken: function(){
+				return new Promise(function(resolve,reject){
+					
+					var params = {
+						calendarId: config.google.calendar.id,
+						fields:'nextSyncToken'
+					}	
+
+					gcal.events.list(params, function(err,response){
+						if(err){
+							return reject(err)
+						}
+						
+						resolve(response)
+					})	
+
+				})
+			},
+
+			getEventsChangedSince: function(lastSyncToken,calendarId){
+				return new Promise(function(resolve,reject){
+				
+					var params = {
+						calendarId: calendarId,
+						singleEvents: true
+					};
+
+					if(lastSyncToken){
+						syncToken: lastSyncToken	
+					}
 
 					gcal.events.list(params, function(err,response){
 						if(err) {
@@ -48,6 +89,18 @@ module.exports = (function(){
 						}
 						resolve(response);
 					});
+				});
+			},
+
+			watch: function(eventId){
+
+				
+				return new Promise(function(resolve,reject){
+					var params = {
+						calendarId: config.google.calendar.id,
+						type:'web_hook',
+						resource: data
+					};
 				});
 			},
 

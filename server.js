@@ -4,9 +4,12 @@
 		path = require('path'),
 		bodyParser = require('body-parser'),
 		google = require('./routes/google'),
+		notification = require('./routes/notification'),
+		couch = require('./routes/couch'),
 		moment = require('moment'),
 		config = require('./config'),
 		jwt = require('express-jwt'),
+		proxy = require('express-http-proxy'),
 		fieldbook = require('./routes/fieldbook');
 
 	var app = express();
@@ -20,11 +23,16 @@
 	app.set('view engine', 'mustache');
 	app.set('views', path.join(__dirname, 'views'));
 	app.use(express.static(path.join(__dirname,'public')));
-	app.use(bodyParser.json());
-
+	app.use(bodyParser.json());	
+	app.use('/couch', authorize,proxy('127.0.0.1:5984', {
+		forwardPath: function(req, res) {
+ 		   return require('url').parse(req.url).path;
+  		}
+	}));
+	
 	var router = express.Router();
-	app.use(router);
 
+	app.use(router);
 
 	router.get('/',function(req,res){
 		res.status(200).json({message:'alive'});;
@@ -46,8 +54,9 @@
 		});
 	}
 
-	router.get('/list',authorize, google.authorize,google.getEvents, renderList);	
-	router.get('/events/:date',authorize, google.authorize,google.getEvents,fieldbook.getEvents); 
+	router.post('/google/notification', notification.authorize, google.authorize, google.getChanges, couch.updateEvents);
+
+	router.get('/list',authorize, couch.getEvents, renderList);	
 	router.use('/event',authorize, google.authorize,fieldbook.checkEvent, google.checkEvent,fieldbook.addEvent);
 
 	router.post('/event/checkin',authorize, fieldbook.checkIn, google.checkIn);
