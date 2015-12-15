@@ -56,12 +56,11 @@
 
 	router.post('/google/notification', notification.authorize, google.authorize, google.getChanges, couch.updateEvents);
 
-	router.get('/list',authorize, couch.getEvents, renderList);	
-	router.use('/event',authorize, google.authorize,fieldbook.checkEvent, google.checkEvent,fieldbook.addEvent);
-
-	router.post('/event/checkin',authorize, fieldbook.checkIn, google.checkIn);
-	router.post('/event/checkout',authorize, fieldbook.checkOut, google.checkOut);
-	router.post('/event/skip',authorize, fieldbook.skip, google.skip);
+	router.get('/events/:date', authorize,couch.getEvents)
+	router.use('/event', authorize)
+	router.post('/event/checkin',couch.checkIn);
+	router.post('/event/checkout',couch.checkOut);
+	router.post('/event/skip',couch.skip);
 
 	router.get('/', function(req,res){
 		res.send('uovo');
