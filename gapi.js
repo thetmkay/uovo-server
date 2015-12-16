@@ -92,15 +92,21 @@ module.exports = (function(){
 				});
 			},
 
-			watch: function(eventId){
+			watch: function(data){
 
 				
 				return new Promise(function(resolve,reject){
 					var params = {
 						calendarId: config.google.calendar.id,
-						type:'web_hook',
 						resource: data
 					};
+
+					gcal.events.watch(params, function(err,response){
+						if(err){
+							return reject(err);
+						}
+						resolve(response);
+					})
 				});
 			},
 

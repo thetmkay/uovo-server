@@ -23,12 +23,12 @@
 	app.set('view engine', 'mustache');
 	app.set('views', path.join(__dirname, 'views'));
 	app.use(express.static(path.join(__dirname,'public')));
-	app.use(bodyParser.json());	
-	app.use('/couch', authorize,proxy('127.0.0.1:5984', {
+	app.use('/couch',authorize,proxy('127.0.0.1:5984', {
 		forwardPath: function(req, res) {
  		   return require('url').parse(req.url).path;
   		}
 	}));
+	app.use(bodyParser.json());	
 	
 	var router = express.Router();
 
@@ -37,26 +37,12 @@
 	router.get('/',function(req,res){
 		res.status(200).json({message:'alive'});;
 	});
+
+	router.get('/watch',google.authorize, notification.createPush)
 	
-	function renderList(req,res){
-		res.render('list',{
-			events:req.events,
-			filterDate: function(){
-				return function(text,render){
-					return moment(render(text)).format('D/MM/YY');
-				};
-			},
-			filterTime: function(){ 
-				return function(text,render){
-					return moment(render(text)).format('H:mm');	
-				};
-			}
-		});
-	}
-
 	router.post('/google/notification', notification.authorize, google.authorize, google.getChanges, couch.updateEvents);
-
-	router.get('/events/:date', authorize,couch.getEvents)
+	router.get('/update', authorize, google.authorize, google.getChanges, couch.updateEvents);	
+	router.get('/events/:date', authorize, couch.getEvents)
 	router.use('/event', authorize)
 	router.post('/event/checkin',couch.checkIn);
 	router.post('/event/checkout',couch.checkOut);
