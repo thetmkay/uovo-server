@@ -5,7 +5,7 @@ module.exports = (function(){
 	var gauth = require('./gauth')
 	var config = require('../config')
 
-	const DBNAME = 'testuovo'
+	const DBNAME = 'uovo'
 	const DESIGN_DOC = '_design/day'
 	const SYNC_DOC = '_local/lastSyncToken'
 

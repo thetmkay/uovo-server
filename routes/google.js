@@ -1,8 +1,8 @@
 module.exports = (function(){	
 	var moment = require('moment'),	
 		constants = require('../constants.js'),
-		gauth  = require('../gauth.js'),
-		gapi = require('../gapi.js');
+		gauth  = require('../middleware/gauth.js'),
+		gapi = require('../middleware/gapi.js');
 	
 	const REDIRECT_URL = 'http://localhost:3000/auth/google/callback';
 
