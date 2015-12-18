@@ -13,8 +13,6 @@ module.exports = (function(){
 				name: ev.summary,
 				start_time:moment(ev.start.dateTime).format(),
 				end_time:moment(ev.end.dateTime).format(),
-				check_in_time: null,
-				check_out_time: null,
 				skipped: false,
 				date: moment(ev.start.dateTime).format('YYYY-MM-DD'),
 				_id: ev.id,
