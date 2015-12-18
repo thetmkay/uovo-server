@@ -2,23 +2,13 @@ module.exports = (function(){
 	
 	'use strict'
 
-	var nano = require('nano')
-	var prom = require('nano-promises')
-
-	var db = prom(nano('http://127.0.0.1:5984')).db.use('uovo') 
-
-		
-	var designDoc = {
-		views: {
-		  byDate: {
-			map: 'function(doc){ if(doc.date){ emit(doc.date, doc);	}}'
-		  }
-		}
-	  }
+	var db = require('../middleware/couch')
 
 	function getRev(eventId){
 		return db.head(eventId).then(function(body){
 			return body[1].etag.replace(/\"/g,'')
+		}).catch(function(err){
+			console.error(err)
 		})
 	}
 
@@ -71,10 +61,14 @@ module.exports = (function(){
 
 		updateEvents: function(req,res,next){
 			var events = req.events
-
+			var count = 0;
 			Promise.all(events.map(function(ev,index){
 				return getRev(ev._id).then(function(rev){
+					if(ev.status){
+						count++	
+					}
 					if(ev.status === 'cancelled'){
+						console.log('cancelled')
 						return db.destroy(body._id, body.rev);		
 					}	
 					ev._rev = rev

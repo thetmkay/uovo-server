@@ -3,7 +3,60 @@ module.exports = (function(){
 	var google = require('googleapis');
 	var gcal = google.calendar('v3');
 	var moment = require('moment');
-	var config = require('./config');
+	var config = require('../config');
+
+	var lastSyncToken;
+
+	function mapEvents(events){
+		return events.map(function(ev){
+			return  {
+				name: ev.summary,
+				start_time:moment(ev.start.dateTime).format(),
+				end_time:moment(ev.end.dateTime).format(),
+				check_in_time: null,
+				check_out_time: null,
+				skipped: false,
+				date: moment(ev.start.dateTime).format('YYYY-MM-DD'),
+				_id: ev.id,
+				is_cancelled: ev.status === 'cancelled'
+			}
+		});
+	}
+
+	function getAllPages(response, acc){
+
+		if(!acc) {
+			acc = response.items
+		}
+			
+		if(response.nextSyncToken){
+			return Promise.resolve([response.nextSyncToken,acc])	
+		} else if(!response.nextPageToken){
+			return Promise.resolve([null, acc])
+		} else {
+			var params = {
+				calendarId: config.google.calendar.id,
+				showDeleted: true,
+				singleEvents: true,
+				pageToken:response.nextPageToken	
+			}
+			
+			return listEvents(params).then(function(newResponse){
+				return getAllPages(newResponse,acc.concat(newResponse.items))
+			})
+		}
+	}
+
+	function listEvents(params){
+		return new Promise(function(resolve,reject){
+			gcal.events.list(params, function(err,response){
+				if(err) {
+					return reject(err)
+				}
+				resolve(response)	
+			})
+		})
+	}
 
 	return{
 		options: function(opts){
@@ -34,7 +87,15 @@ module.exports = (function(){
 					})
 				});
 			},*/
-			
+		
+			setSyncToken: function(token){
+				lastSyncToken = token
+			},	
+	
+			getSyncToken: function(){
+				return lastSyncToken
+			},
+			/*
 			getLatestToken: function(){
 				return new Promise(function(resolve,reject){
 					
@@ -53,27 +114,29 @@ module.exports = (function(){
 
 				})
 			},
+			*/
+			getChanges: function(){
+				var params = {
+					calendarId: config.google.calendar.id,
+					showDeleted: true,
+					singleEvents: true
+				}
+				if(lastSyncToken){
+					params.syncToken = lastSyncToken	
+				}
 
-			getEventsChangedSince: function(lastSyncToken,calendarId){
-				return new Promise(function(resolve,reject){
-				
-					var params = {
-						calendarId: calendarId,
-						singleEvents: true
-					};
-
-					if(lastSyncToken){
-						syncToken: lastSyncToken	
+				return listEvents(params)
+				.then(getAllPages)
+				.then(function(arr){
+					var token = arr[0]
+					var acc = arr[1]
+			
+					if(token){
+						lastSyncToken = token 
 					}
-
-					gcal.events.list(params, function(err,response){
-						if(err) {
-							return reject(err);
-						}
-
-						resolve(response);	
-					})
-				});
+						
+					return mapEvents(acc)
+				})
 			},
 
 			getEvent: function(eventId){
@@ -94,7 +157,6 @@ module.exports = (function(){
 
 			watch: function(data){
 
-				
 				return new Promise(function(resolve,reject){
 					var params = {
 						calendarId: config.google.calendar.id,

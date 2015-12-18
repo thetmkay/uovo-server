@@ -3,12 +3,11 @@ module.exports = (function(){
 	var google = require('googleapis');
 	var gcal;
 
-	var config = require('./config');
-	var serviceConfig = require('./google-service');
+	var config = require('../config');
 
 	const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 
-	var serviceAuth = new google.auth.JWT(serviceConfig.client_email,null,serviceConfig.private_key, SCOPES);
+	var serviceAuth = new google.auth.JWT(config.google.service.client_email,null,config.google.service.private_key, SCOPES);
 
 
 

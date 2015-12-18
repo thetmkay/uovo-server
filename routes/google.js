@@ -8,10 +8,6 @@ module.exports = (function(){
 
 	var lastSyncToken;
 
-	gapi.calendar.getLatestToken(function(response){
-		lastSyncToken = response.nextSyncToken
-	});
-
 	function updateColor(color) {
 		return function(req,res,next){
 			console.log('google: updateColor');
@@ -41,20 +37,7 @@ module.exports = (function(){
 		}
 	}
 
-	function mapEvents(events){
-		return events.map(function(ev){
-			return  {
-				name: ev.summary,
-				start_time:moment(ev.start.dateTime).format(),
-				end_time:moment(ev.end.dateTime).format(),
-				check_in_time: null,
-				check_out_time: null,
-				skipped: false,
-				date: moment(ev.start.dateTime).format('YYYY-MM-DD'),
-				_id: ev.id
-			}
-		});
-	}
+	
 
 	function notSkipped(record){
 		return !record.skipped || record.skipped === 'false';
@@ -92,40 +75,9 @@ module.exports = (function(){
 			updateColor(constants.colors.red)(req,res,next);	
 		},
 
-		checkEvent: function(req,res,next){
-			if(req.calendarEvent){
-				next();
-				return;
-			}		
-
-			if(req.calendarEventData || !req.body.eventId){
-				res.status(404).json({
-					status: 404,
-					message: 'Invalid request object'
-				});
-			}
-
-			gapi.calendar.getEvent(req.body.eventId).then(function(calendarEvent){
-				req.calendarEventData = calendarEvent;
-				next();
-				return;
-
-			}, function(err){
-				res.status(err.status || err.code  || 404).json(err);
-			});
-		},
-
 		getChanges: function(req,res,next){
-			console.log('notification')
-			
-			var resourceId = require('../config').google.calendar.id
-			//var resourceId = req.body.resourceId
-			
-			gapi.calendar.getEventsChangedSince(lastSyncToken,resourceId).then(function(response){
-				lastSyncToken = response.nextSyncToken
-				console.log(`gapi fetched: ${response.items.length}`)
-				req.events = mapEvents(response.items)	
-				console.log('mapped')
+			gapi.calendar.getChanges().then(function(events){
+				req.events = events	
 				next()
 			}, function(err){
 				res.status(err.status || err.code || 404).json(err)
