@@ -122,10 +122,11 @@ module.exports = (function(){
 				if(lastSyncToken){
 					params.syncToken = lastSyncToken	
 				}
-
+				console.log('getChanges')
 				return listEvents(params)
 				.then(getAllPages)
 				.then(function(arr){
+					console.log(arr)
 					var token = arr[0]
 					var acc = arr[1]
 			

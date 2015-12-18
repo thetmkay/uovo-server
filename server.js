@@ -40,7 +40,7 @@
 
 	router.get('/watch',google.authorize, notification.createPush)
 	
-	router.post('/google/notification', notification.authorize, google.authorize, google.getChanges, couch.updateEvents);
+	router.post('/google/notification', google.authorize, google.getChanges, couch.updateEvents);
 	router.get('/update', authorize, google.authorize, google.getChanges, couch.updateEvents);	
 	router.get('/events/:date', authorize, couch.getEvents)
 	router.use('/event', authorize)

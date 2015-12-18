@@ -139,7 +139,8 @@ module.exports = (function(){
 		return {
 			get: wrapFn('get'),
 			insert: wrapFn('insert'),
-			head: wrapFn('head')
+			head: wrapFn('head'),
+			destroy: wrapFn('destroy')
 		}	
 	}
 
