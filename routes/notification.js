@@ -93,7 +93,7 @@ module.exports = (function(){
 			var googleState = req.headers['x-goog-resource-state']
 			var valid = googleId === channelId  &&
 							googleToken === channelToken &&
-							googleState === 'sync'
+							googleState === 'exists'
 
 			console.log(`${channelId} vs ${googleId}`)
 			console.log(`${channelToken} vs ${googleToken}`)
